@@ -1,0 +1,122 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template plugintype_pluginname/template_name
+
+    Template purpose and description.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+    }
+}}
+
+{{< core_form/element-template-inline }}
+    {{$label}}
+        {{^element.hiddenlabel}}
+            <p id="{{element.id}}_label" class="mb-0 word-break" aria-hidden="true">
+                {{{label}}}
+            </p>
+        {{/element.hiddenlabel}}
+    {{/label}}
+    {{$element}}
+    <fieldset class="w-100 m-0 p-0 border-0">
+        {{#label}}
+            <legend class="sr-only">{{label}}</legend>
+        {{/label}}
+    <div class="d-flex flex-nowrap align-items-center subsection-container">
+        {{#element.elements}}
+
+            {{{separator}}}
+
+            {{#select}}
+            {{^element.frozen}}
+            {{#element.multiple}}
+                <input type="hidden" name="{{nameraw}}" value="_qf__force_multiselect_submission">
+            {{/element.multiple}}
+            <select class="{{^element.multiple}}custom-select{{/element.multiple}}
+                        {{#element.multiple}}form-control{{/element.multiple}}
+                        {{#error}}is-invalid{{/error}}
+                        col-md-3
+                        activity-select"
+                name="{{name}}"
+                id="{{id}}"
+                {{#element.multiple}}multiple{{/element.multiple}}
+                {{#size}}size="{{size}}"{{/size}}
+                {{#error}}autofocus aria-describedby="{{element.iderror}}"{{/error}}
+                {{{attributes}}} >
+                {{#options}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}
+                    {{{optionattributes}}}>{{{text}}}</option>
+                {{/options}}
+            </select>
+            {{/element.frozen}}
+            {{#element.frozen}}
+                {{#options}}
+                    {{#selected}}
+                        {{{text}}}
+                        {{^element.hardfrozen}}
+                            <input type="hidden" name="{{name}}" value="{{value}}" id="{{id}}">
+                        {{/element.hardfrozen}}
+                    {{/selected}}
+                {{/options}}
+            {{/element.frozen}}
+            {{/select}}
+            
+            {{{separator}}}
+
+            {{#input}}
+            <input type="text"
+                    class="form-control {{#error}}is-invalid{{/error}} col-md-10 activity-form"
+                    name="{{name}}"
+                    id="{{id}}"
+                    value="{{value}}"
+                    {{#size}}size="{{size}}"{{/size}}
+                    {{#element.frozen}}readonly {{#element.hardfrozen}}disabled{{/element.hardfrozen}}{{/element.frozen}}
+                    {{#error}}autofocus aria-describedby="{{element.iderror}}"{{/error}}
+                    {{{attributes}}} >
+            {{/input}}
+
+            {{{separator}}}
+
+            {{#button}}
+            {{^element.frozen}}
+            <button
+                    class="remove-button btn btn_primary"
+                    name="{{name}}"
+                    id="{{id}}"
+                    type="button"
+                    {{#error}}autofocus aria-describedby="{{element.iderror}}"{{/error}}
+                    {{{attributes}}}>
+                    {{{value}}}
+                    </button>
+            {{/element.frozen}}
+            {{/button}}
+            
+        {{/element.elements}}
+    </div>
+    </fieldset>
+    {{/element}}
+{{/ core_form/element-template-inline }}
