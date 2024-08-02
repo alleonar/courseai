@@ -30,6 +30,7 @@ $string['pluginname'] = 'CourseAI';
 
 // Erreurs et avertissements.
 $string['requiredfield'] = 'Ce champ est requis';
+$string['wrongdatafromuser'] = 'Les options sélectionnées ne sont pas valides';
 $string['structureissue'] = 'Problème rencontré avec la réponse. Veuillez réessayer plus tard.';
 $string['courseai:enterpage'] = 'Autoriser l\'utilisateur à accéder à la page du générateur de structure AI';
 $string['courseai:permissions'] = 'Pas de permissions';
@@ -79,7 +80,7 @@ $string['intermediate'] = 'Intermédiaire';
 $string['expert'] = 'Expert';
 
 // Options par défaut.
-$string['defaultpublic'] = 'étudiants';
+$string['defaultpublic'] = 'Etudiants';
 $string['nocoursecontext'] = '';
 $string['nocourseobjectives'] = '';
 
@@ -104,7 +105,16 @@ $string['modulename_quiz'] = 'Quiz';
 
 // Modal d'attente.
 $string['waitmodaltitle'] = 'Veuillez patienter !';
-$string['waitmodalbody'] = 'Course AI est en train de créer un cours fantastique pour vos étudiants !';
+$string['waitmodalbody'] = 'Course AI est en train de créer un cours fantastique pour vos étudiants!';
+$string['waitmodalanimation'] =
+'<div style="width: 100%; display: flex; justify-content: center; align-items: center">
+<p id="modalanim" style="font-size: 3rem; display: inline-block; margin: auto">&#9881</p>
+</div>';
+
+// Modal de confirmation.
+$string['confirmmodaltitle'] = 'Supprimer la section';
+$string['confirmmodalbody'] = 'Etes vous sûr? Cette action ne peut pas être annulée.';
+$string['confirmmodalbutton'] = 'Supprimer';
 
 // Label de la section générale.
 $string['generallabeltext'] =
@@ -147,16 +157,20 @@ $string['modulehelp_glossary'] =
 /******************************************************************************************************************************************************************************* */
 
 // IMAGE PROMPT PART.
-// Prompt v1.
+// Prompt v2.
 $string['openaiimagecourse'] =
-'Can you generate an image to illustrate a course on {$a->coursetitle}?
- Do not add any unappropriate content';
-// // The image must be in a {$a->imagestyle} style.';
+'Illustrate {$a->coursetitle}. No unappropriate or nsfw content.';
 $string['openaiimagesection'] =
-'Can you generate an image to illustrate a chapter of a course on {$a->sectiontitle}?
- The course subject is {$a->coursetitle}.
- Do not add any unappropriate content';
-// // The image must be in a {$a->imagestyle} style.';
+'{$a->sectiontitle} of {$a->coursetitle}. No unappropriate or nsfw content.';
+
+// // Prompt v1.
+// $string['openaiimagecourse'] =
+// 'Can you generate an image to illustrate a course on {$a->coursetitle}?
+//  Do not add any unappropriate content.The image must be in a {$a->imagestyle} style.';
+// $string['openaiimagesection'] =
+// 'Can you generate an image to illustrate a chapter of a course on {$a->sectiontitle}?
+//  The course subject is {$a->coursetitle}. Do not add any unappropriate content.
+//  The image must be in a {$a->imagestyle} style.';
 $string['openaiimageerror'] = 'result is empty or prompt not respecting API terms of service and conditions';
 
 /******************************************************************************************************************************************************************************* */

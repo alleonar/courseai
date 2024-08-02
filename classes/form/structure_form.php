@@ -27,9 +27,7 @@ namespace local_courseai_elt\form;
 defined('MOODLE_INTERNAL') || die();
 
 
-/**
- * Import template/config/lib files.
- */
+// Import template/config/lib files.
 require_once($CFG->libdir . '/formslib.php');
 
 /**
@@ -59,6 +57,7 @@ class structure_form extends \moodleform {
         // Course language (default $user).
         $mform->addElement('text', 'newcourselang', get_string('yourcourselang', 'local_courseai_elt'));
         $mform->setType('newcourselang', PARAM_TEXT);
+        $mform->addRule('newcourselang', get_string('requiredfield', 'local_courseai_elt'), 'required', null, 'client');
         $mform->setDefault('newcourselang', get_string('thislanguage', 'langconfig'));
 
         // Context/description of Course.
@@ -89,6 +88,8 @@ class structure_form extends \moodleform {
         // Students category.
         $mform->addElement('text', 'newcoursepublic', get_string('yourcoursepublic', 'local_courseai_elt'));
         $mform->setType('newcoursepublic', PARAM_TEXT);
+        $mform->addRule('newcoursepublic', get_string('requiredfield', 'local_courseai_elt'), 'required', null, 'client');
+        $mform->setDefault('newcoursepublic', get_string('defaultpublic', 'local_courseai_elt'));
 
         // Students level.
         $levelradioarray = [];
@@ -105,13 +106,13 @@ class structure_form extends \moodleform {
         // Number of sections of course.
         $mform->addElement('select', 'newcourselength', get_string('yourcourselength', 'local_courseai_elt'),
         [
-            1 => '1',
+            // 1 => '1',
             2 => '2',
             3 => '3',
             4 => '4',
             5 => '5',
             6 => '6',
-            7 => '7+',
+            7 => '7',
         ]);
         $mform->setType('newcourselength', PARAM_INT);
         $mform->setDefault('newcourselength', 3);
@@ -119,11 +120,11 @@ class structure_form extends \moodleform {
         // Number of sub section in section.
         $mform->addElement('select', 'newsectionlength', get_string('yoursectionlength', 'local_courseai_elt'),
         [
-            1 => '1',
+            // 1 => '1',
             2 => '2',
             3 => '3',
             4 => '4',
-            5 => '5+',
+            5 => '5',
         ]);
         $mform->setType('newsectionlength', PARAM_INT);
         $mform->setDefault('newsectionlength', 3);

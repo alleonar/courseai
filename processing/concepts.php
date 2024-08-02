@@ -45,13 +45,12 @@ $courseid = required_param('courseid', PARAM_INT);
 $context = context_course::instance($courseid);
 
 
-
 // FILTER AND CAPABILITY CHECK.
 // Check if user is connected to reach further functionalities.
 require_login($courseid);
 // Check if user is identified and not an anonymous guest.
 if (isguestuser()) {
-    throw new moodle_exception('noguest');
+    throw new moodle_exception(get_string('courseai:permissions', 'local_courseai_elt'));
 }
 // Check if session key is valid.
 require_sesskey();
@@ -86,8 +85,8 @@ $PAGE->set_heading(get_string('pluginname', 'local_courseai_elt'));
 // STRUCTURE FORM DATA.
 $coursetitle = required_param('newcoursetitle', PARAM_TEXT);
 $courselang = optional_param('newcourselang', get_string('thislanguage', 'langconfig'), PARAM_TEXT);
-$coursecontext = optional_param('newcoursecontext', get_string('nocoursecontext', 'local_courseai_elt'), PARAM_TEXT);
-$courseobjectives = optional_param('newcourseobjectives', get_string('nocourseobjectives', 'local_courseai_elt'), PARAM_TEXT);
+$coursecontext = optional_param('newcoursecontext', '', PARAM_TEXT);
+$courseobjectives = optional_param('newcourseobjectives', '', PARAM_TEXT);
 $coursestudents = optional_param('newcoursepublic', get_string('defaultpublic', 'local_courseai_elt'), PARAM_TEXT);
 $courselevel = optional_param('studentslevel', get_string('beginner', 'local_courseai_elt'), PARAM_TEXT);
 $sectionnumber = optional_param('newcourselength', 3, PARAM_INT);
@@ -120,7 +119,7 @@ $formvalid = optional_param('formvalid', false, PARAM_BOOL);
 // Check if form return with data.
 if ($formvalid) {
     global $DB;
-
+    
     // Instantiate form to access get_data (must add customdata to avoid moodle form error).
     $customdata = [
         'courseid' => '',
@@ -146,7 +145,7 @@ if ($formvalid) {
     $quizoccurence = json_decode($fromform->quizoccurence, true);
     // Check quiz options format.
     if (!is_array($quizoccurence) || count($quizoccurence) !== 3) {
-        throw new moodle_exception('Unvalid options');
+        throw new moodle_exception(get_string('wrongdatafromuser', 'local_courseai_elt'));
     }
     $generateimage = $fromform->generateimage;
     // $imagestyle = $fromform->imagestyle;
@@ -363,7 +362,7 @@ if ($formvalid) {
                     $moduleid = local_coursai_elt_get_module_id($newactivitytype, $modulesref);
 
                     if (!$moduleid) {
-                        return ('Activity type unknown');
+                        throw new coding_exception('activity type unknown');
                     }
                 }
 
@@ -463,7 +462,7 @@ if ($formvalid) {
                 }
             }
         } else {
-            return('error inserting sections in Database');die;
+            throw new coding_exception('error inserting sections in database');
         };
     }
     // Purge all caches for modifications to be effective.

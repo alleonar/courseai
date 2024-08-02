@@ -23,7 +23,6 @@
  * @copyright  2024 E-Learning Touch
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @link       https://www.elearningtouch.com/
- *
  */
 
 /**
@@ -50,7 +49,7 @@ function debug($var) {
  * @return array The response data from the API, decoded from JSON format. The exact structure of this data
  *               depends on the API's response format.
  *
- * @throws Exception Throws an exception with a descriptive error message if there is an issue with the API request
+ * @throws coding_exception Throws an exception with a descriptive error message if there is an issue with the API request
  *                   or if the HTTP status code is not 200.
  */
 function local_courseai_elt_call_api($prompt) {
@@ -102,19 +101,20 @@ function local_courseai_elt_call_api($prompt) {
         );
 
         $response = curl_exec($curl);
-
+        
         if ($response === false) {
             $error = curl_error($curl);
             curl_close($curl);
-            die("Erreur lors de la communication avec l'API: $error");
+            throw new coding_exception($error);
         } else {
             $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);
-
+            
             if ($httpcode !== 200) {
-                die("Erreur lors de la communication avec l'API : HTTP $httpcode");
+                $errormessage = json_decode($response);
+                $errormessage = $errormessage->error->message;
+                throw new coding_exception('HTTP ' . $httpcode . '. ' . $errormessage);
             }
-
             $responsedata = json_decode($response, true);
 
             return $responsedata;
@@ -162,17 +162,17 @@ function local_courseai_elt_call_api($prompt) {
         );
 
         $response = curl_exec($curl);
-
+        
         if ($response === false) {
             $error = curl_error($curl);
             curl_close($curl);
-            die("Erreur lors de la communication avec l'API: $error");
+            throw new coding_exception($error);
         } else {
             $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);
 
             if ($httpcode !== 200) {
-                die("Erreur lors de la communication avec l'API : HTTP $httpcode");
+                throw new coding_exception('HTTP ' . $httpcode . '. ' . $errormessage);
             }
 
             $responsedata = json_decode($response, true);
@@ -258,6 +258,7 @@ function local_courseai_elt_curl_to_array($response) {
     }
     // Add description to the very last position.
     $conceptarray[] = $aicoursedescription;
+    
     return $conceptarray;
 }
 
@@ -558,7 +559,7 @@ function local_courseai_elt_generate_openai_image($promptinfos) {
     $result = json_decode($result);
 
     if (empty($result->data)) {
-        throw new moodle_exception('error', 'local_courseai_elt', '', null, get_string('openaiimageerror', 'local_courseai_elt'));
+        throw new moodle_exception(get_string('openaiimageerror', 'local_courseai_elt'));
     }
 
     $list = [];
@@ -589,7 +590,7 @@ function local_courseai_elt_generate_openai_image($promptinfos) {
  * @param string $imagename The name of the image file including its extension (e.g., 'image.png').
  * @param string $imageurl The URL from which the image will be downloaded.
  *
- * @throws moodle_exception If the image cannot be downloaded or the downloaded image data is too small.
+ * @throws coding_exception If the image cannot be downloaded or the downloaded image data is too small.
  */
 function local_courseai_elt_gen_img_course($courseid, $imagename, $imageurl) {
     global $USER, $DB;
@@ -613,12 +614,12 @@ function local_courseai_elt_gen_img_course($courseid, $imagename, $imageurl) {
     // Download image.
     $imagedata = file_get_contents($imageurl);
     if (!$imagedata) {
-        throw new moodle_exception('error', 'local_courseai_elt', '', null, 'Failed to download the image.');
+        throw new coding_exception('Failed to download the image.');
     }
 
     // Check if image file is valid.
     if (strlen($imagedata) < 10) {
-        throw new moodle_exception('error', 'local_courseai_elt', '', null, 'Downloaded image data is too small.');
+        throw new coding_exception('Downloaded image data is too small.');
     }
 
     // Download and create file in final area.

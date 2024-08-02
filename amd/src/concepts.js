@@ -22,23 +22,17 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Moodle API.
-// jquery ($)
-// core/str (str)
-// core/templates (templates)
-// core/modal_factory (ModalFactory)
-// core/ajax (Ajax)
-
-// Declaration of the module
-define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
-    function($, templates, ModalFactory, Str) {
+// Declaration of the module.
+define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events', 'core/str'],
+    function($, templates, ModalFactory, ModalEvents, Str) {
         
         // Init function.
         const init = async() => {
-            // Course structure.
+
+            // Get course structure from data-attribute.
             const DATA_ANSWER_JS = document.getElementById('dataanswerjs');
             const ANSWER_JS = DATA_ANSWER_JS.getAttribute('data-answerjs');
-    
+            // If failed send an error.
             if (!ANSWER_JS) {
                 console.error('JSON is undefined');
                 return;
@@ -47,6 +41,10 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
             // Get_strings.
             let waitModalTitle = await Str.get_string('waitmodaltitle', 'local_courseai_elt');
             let waitModalBody = await Str.get_string('waitmodalbody', 'local_courseai_elt');
+            let waitModalAnimation = await Str.get_string('waitmodalanimation', 'local_courseai_elt');
+            let confirmModalTitle = await Str.get_string('confirmmodaltitle', 'local_courseai_elt');
+            let confirmModalBody = await Str.get_string('confirmmodalbody', 'local_courseai_elt');
+            let confirmModalButton = await Str.get_string('confirmmodalbutton', 'local_courseai_elt');
             let moduleNamePage = await Str.get_string('modulename_page', 'local_courseai_elt');
             let moduleNameLabel = await Str.get_string('modulename_label', 'local_courseai_elt');
             let moduleNameForum = await Str.get_string('modulename_forum', 'local_courseai_elt');
@@ -60,11 +58,37 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
             const MODAL = await ModalFactory.create({
                 title: waitModalTitle,
                 body: waitModalBody,
-                footer: '',
+                footer: waitModalAnimation,
+            })
+
+            // Confirm modal.
+            const CONFIRM = await ModalFactory.create({
+                type: ModalFactory.types.SAVE_CANCEL,
+                title: confirmModalTitle,
+                body: confirmModalBody,
             });
+            // Change the save button label but not the value!
+            CONFIRM.setButtonText('save', confirmModalButton);
+            
+
+            /**
+             * Modal Animation function.
+             * 
+             * Allow HTML gear icon to rotate.
+             */
+            function modalGearRotate(){
+                const rotatingGear = document.getElementById('modalanim');
+                let angle = 0;
+                setInterval(() => {
+                    angle = (angle + 1) % 360;
+                    rotatingGear.style.transform = `rotate(${angle}deg)`;
+                }, 10);
+            }
     
             /**
              * Section creation function.
+             * 
+             * Create a section with a container for activities.
              */
             function addSectionGroup() {
                 const ADD_SECTION_BUTTON = document.getElementsByClassName('add-section-button');
@@ -139,7 +163,9 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
             addSectionGroup();
     
             /**
-             * Remove section function
+             * Remove section function.
+             * 
+             * Delete the DOM element "form-group" containing full section if confirm in modal.
              */
             function removeSectionGroup() {
                 const DELETE_BUTTONS = document.querySelectorAll('.remove-section-button');
@@ -148,20 +174,24 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
                 DELETE_BUTTONS.forEach(deleteBtn => {
                     deleteBtn.addEventListener('click', (event) => {
                         targetToDelete = event.target.closest('.form-group');
-                        if (targetToDelete) {                     
-                            targetToDelete.remove();
-                            targetToDelete = null;
-                        }
+                        CONFIRM.show();
+                        CONFIRM.getRoot().on(ModalEvents.save, (e) => {
+                            if (targetToDelete) {                     
+                                targetToDelete.remove();
+                                targetToDelete = null;
+                            }
+                        });
                     });
                 });
             }
     
             /**
              * Add new activity group function.
+             * 
+             * Create an activity group in the dedicated section container.
              */
             // Array to follow activities listenner assignement to avoid duplication.
             let activityListenerList = [];
-    
             function addActivityGroup() {
             
                 const ADD_ACTIVITY_BUTTONS = document.getElementsByClassName('add-activity-button');
@@ -281,7 +311,7 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
                                             attributes: 'class="remove-button btn btn_primary"',
                                             frozen: false,
                                             error: null
-                                        }
+                                        },
                                     ]
                                 }
                             };
@@ -311,6 +341,8 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
     
             /**
              * Remove activity group function.
+             * 
+             * Delete the DOM element "form-group" containing full activity.
              */
             function removeActivityGroup() {
     
@@ -327,7 +359,10 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
             }
     
             /**
+             * Get JS form data function.
+             * 
              * Get all data from fields to sanitize them and prepare them for db insert.
+             * The sanityze part is optionnal since all real cleaning part is done server side.
              */
             function getFormData () {
                 
@@ -394,7 +429,9 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
             }       
     
             /**
-             * Prepare listener to generate course structure action.
+             * Generate course function.
+             * 
+             * Add listener to prepare and submit data with course_form.php.
              */
             function generateCourseStructure(){
     
@@ -418,6 +455,7 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/str'],
                     const SUBMIT_FORM = document.getElementById('coursestructureform');
                     SUBMIT_FORM.submit();
                     MODAL.show();
+                    modalGearRotate();
                 })
             }
     

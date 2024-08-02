@@ -76,7 +76,7 @@ Grunt watch ne fonctionne pas non plus. Besoin de lancer grunt à la main.
 **Course AI - Certificate**
 Les certificats sont installés localement 'C:\curl\cacert.pem'.
 Peux causer quelques soucis lors des requêtes aux API.
-S'il ne sont pas nécessaires, commenter les lignes "cacert" et "CURLOPT_CAINFO" dans lib.php.
+S'il ne sont pas nécessaires, commenter les lignes "cacert" et "CURLOPT_CAINFO" dans locallib.php.
 
 **Course AI - chat gpt 4o**
 Dans de très rares cas, l'api ne suit pas les directives. 

@@ -8,9 +8,9 @@ module.exports = function(grunt) {
   
       // JSHint.
       jshint: {
-        files: ['amd/src/**/*.js'], // Chemin vers vos fichiers JS
+        files: ['amd/src/**/*.js'], // Path to JS files.
         options: {
-            jshintrc: '.jshintrc' // Utilise le fichier de configuration .jshintrc à la racine du projet
+            jshintrc: '.jshintrc' // Use config file .jshintrc.
         }
       },
   
@@ -22,21 +22,21 @@ module.exports = function(grunt) {
         build: {
             files: [{
               expand: true,
-              cwd: 'amd/src/', // Répertoire source
-              src: '**/*.js', // Pattern pour cibler tous les fichiers JS
-              dest: 'amd/build/', // Répertoire de destination
-              ext: '.min.js' // Extension des fichiers minifiés
+              cwd: 'amd/src/', // Root repository.
+              src: '**/*.js', // Target all JS files and sub-folders.
+              dest: 'amd/build/', // Destination folders.
+              ext: '.min.js' // Minified files extension.
             }]
         }
       },
   
       // Nodeunit (NOT USED YET).
       nodeunit: {
-        all: ['test/**/*_test.js'] // Chemin vers vos fichiers de test
+        all: ['test/**/*_test.js'] // Path to test files.
       },
 
     });
-  
+
     // Load plugins.
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
